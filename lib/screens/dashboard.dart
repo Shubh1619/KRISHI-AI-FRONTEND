@@ -4,6 +4,7 @@ import 'weather_details.dart';
 import 'login_page.dart';
 import 'market_price.dart';
 import 'gov_schemes.dart';
+import 'help_support.dart';
 
 class MainPage extends StatelessWidget {
   final String farmerName;
@@ -63,11 +64,10 @@ class MainPage extends StatelessWidget {
         'color': Colors.purple,
         'title': 'सरकारी योजना',
         'subtitle': 'शेतकऱ्यांसाठी योजना',
-        'onTap': () =>Navigator.push(
+        'onTap':
+            () => Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) =>  SchemesScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => SchemesScreen()),
             ),
       },
       {
@@ -142,7 +142,11 @@ class MainPage extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.help),
                   title: const Text('मदत व सपोर्ट'),
-                  onTap: () {},
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HelpSupportPage()),
+                      ),
                 ),
                 ListTile(
                   leading: const Icon(Icons.logout),
