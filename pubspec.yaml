@@ -1,0 +1,60 @@
+name: krishi_ai
+description: "Krishi AI – Empowering Agriculture with Smart Tech"
+publish_to: 'none'
+
+version: 1.0.0
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Fonts & Icons
+  google_fonts: ^6.2.1
+  cupertino_icons: ^1.0.8
+  dio: ^5.4.3
+
+  # UI & Animation
+  flutter_animate: ^4.2.0
+
+  # Networking
+  http: ^1.2.1
+  http_parser: ^4.0.2
+
+  # Markdown
+  flutter_markdown: ^0.6.17
+
+  # URL launcher
+  url_launcher: ^6.2.5
+
+  # File/Image Pickers
+  file_picker:
+    git:
+      url: https://github.com/miguelpruivo/flutter_file_picker.git
+      ref: master
+  image_picker_for_web: ^3.0.1
+  image_picker: ^1.0.4
+
+  # Permissions
+  permission_handler: ^11.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/krishi_logo.png
+    - assets/farmer.png
+    - assets/icon/app_icon.png
