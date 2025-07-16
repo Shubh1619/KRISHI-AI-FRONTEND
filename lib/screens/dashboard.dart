@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'crop_disease_detection.dart';
 import 'weather_details.dart';
 import 'login_page.dart';
+import 'market_price.dart';
+
 
 class MainPage extends StatelessWidget {
   final String farmerName;
@@ -31,13 +33,17 @@ class MainPage extends StatelessWidget {
               ),
             ),
       },
-      {
-        'icon': Icons.show_chart,
-        'color': Colors.blue,
-        'title': 'मंडी दर',
-        'subtitle': 'थेट बाजार दर व ट्रेंड्स',
-        'onTap': () {},
-      },
+{
+  'icon': Icons.show_chart,
+  'color': Colors.blue,
+  'title': 'मंडी दर',
+  'subtitle': 'थेट बाजार दर व ट्रेंड्स',
+  'onTap': () => Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) =>  MandiPricesScreen()),
+  ),
+},
+
       {
         'icon': Icons.wb_sunny_outlined,
         'color': Colors.orange,
