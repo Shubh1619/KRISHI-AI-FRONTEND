@@ -3,7 +3,7 @@ import 'crop_disease_detection.dart';
 import 'weather_details.dart';
 import 'login_page.dart';
 import 'market_price.dart';
-
+import 'gov_schemes.dart';
 
 class MainPage extends StatelessWidget {
   final String farmerName;
@@ -33,16 +33,17 @@ class MainPage extends StatelessWidget {
               ),
             ),
       },
-{
-  'icon': Icons.show_chart,
-  'color': Colors.blue,
-  'title': 'मंडी दर',
-  'subtitle': 'थेट बाजार दर व ट्रेंड्स',
-  'onTap': () => Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) =>  MandiPricesScreen()),
-  ),
-},
+      {
+        'icon': Icons.show_chart,
+        'color': Colors.blue,
+        'title': 'मंडी दर',
+        'subtitle': 'थेट बाजार दर व ट्रेंड्स',
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MandiPricesScreen()),
+            ),
+      },
 
       {
         'icon': Icons.wb_sunny_outlined,
@@ -62,7 +63,12 @@ class MainPage extends StatelessWidget {
         'color': Colors.purple,
         'title': 'सरकारी योजना',
         'subtitle': 'शेतकऱ्यांसाठी योजना',
-        'onTap': () {},
+        'onTap': () =>Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>  SchemesScreen(),
+              ),
+            ),
       },
       {
         'icon': Icons.forum,
