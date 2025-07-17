@@ -13,7 +13,27 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
   final TextEditingController _cityController = TextEditingController();
 
   final List<String> stages = [
-    'पेरणी', 'अंकुरण', 'वाढीचा टप्पा', 'फूलधारण', 'फळधारण', 'परिपक्वता', 'कापणी'
+    'पेरणी',
+    'अंकुरण',
+    'वाढीचा टप्पा',
+    'फूलधारण',
+    'फळधारण',
+    'परिपक्वता',
+    'कापणी',
+    'पेरणी',
+    'अंकुरण',
+    'वाढीचा टप्पा',
+    'फूलधारण',
+    'फळधारण',
+    'परिपक्वता',
+    'कापणी',
+    'पेरणी',
+    'अंकुरण',
+    'वाढीचा टप्पा',
+    'फूलधारण',
+    'फळधारण',
+    'परिपक्वता',
+    'कापणी',
   ];
   final List<String> crops = ['गहू', 'तांदूळ', 'मका', 'कापूस', 'टोमॅटो'];
 
@@ -68,7 +88,9 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://krushi-ai.onrender.com/weather/advisory?crop=$selectedCrop&stage=$selectedStage&city=$city'),
+        Uri.parse(
+          'https://krushi-ai.onrender.com/weather/advisory?crop=$selectedCrop&stage=$selectedStage&city=$city',
+        ),
       );
       if (response.statusCode == 200) {
         setState(() => advisoryData = jsonDecode(response.body));
@@ -82,7 +104,12 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
     }
   }
 
-  Widget _buildWeatherCard(String title, String value, Color color, IconData icon) {
+  Widget _buildWeatherCard(
+    String title,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
     return Expanded(
       child: Card(
         color: color.withOpacity(0.1),
@@ -93,7 +120,14 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
             children: [
               Icon(icon, color: color, size: 32),
               const SizedBox(height: 8),
-              Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
               const SizedBox(height: 4),
               Text(title, style: const TextStyle(color: Colors.black54)),
             ],
@@ -115,23 +149,34 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('शहर', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text(
+              'शहर',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 4),
             const Text('शहराचे नाव लिहा'),
             const SizedBox(height: 16),
             TextField(
               controller: _cityController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: false,
               ),
             ),
             const SizedBox(height: 10),
             ElevatedButton.icon(
               onPressed: _fetchWeatherOnly,
-              icon: const Icon(Icons.cloud),
-              label: const Text('हवामान मिळवा'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+              icon: const Icon(
+                Icons.cloud,
+                color: Color.fromARGB(255, 225, 222, 222),
+              ),
+              label: const Text(
+                'हवामान मिळवा',
+                style: TextStyle(color: Color.fromARGB(255, 255, 222, 222)),
+              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
             ),
 
             const SizedBox(height: 24),
@@ -143,30 +188,59 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
               ),
 
             if (weatherData != null) ...[
-              const Text('सद्य हवामान', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text(
+                'सद्य हवामान',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
-                  _buildWeatherCard('तापमान', '${weatherData!['तापमान (°C)']}°C', Colors.blue, Icons.thermostat),
+                  _buildWeatherCard(
+                    'तापमान',
+                    '${weatherData!['तापमान (°C)']}°C',
+                    Colors.blue,
+                    Icons.thermostat,
+                  ),
                   const SizedBox(width: 10),
-                  _buildWeatherCard('आर्द्रता', '${weatherData!['आर्द्रता']}%', Colors.green, Icons.water_drop),
+                  _buildWeatherCard(
+                    'आर्द्रता',
+                    '${weatherData!['आर्द्रता']}%',
+                    Colors.green,
+                    Icons.water_drop,
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
-                  _buildWeatherCard('दृष्यता', weatherData!['दृष्यता'] ?? 'N/A', Colors.orange, Icons.remove_red_eye),
+                  _buildWeatherCard(
+                    'दृष्यता',
+                    weatherData!['दृष्यता'] ?? 'N/A',
+                    Colors.orange,
+                    Icons.remove_red_eye,
+                  ),
                   const SizedBox(width: 10),
-                  _buildWeatherCard('वारा', weatherData!['वारा'] ?? 'N/A', Colors.purple, Icons.air),
+                  _buildWeatherCard(
+                    'वारा',
+                    weatherData!['वारा'] ?? 'N/A',
+                    Colors.purple,
+                    Icons.air,
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
               if (weatherData!['वर्णन'] != null)
-                Text('🌤️ वर्णन: ${weatherData!['वर्णन']}', style: const TextStyle(fontSize: 16)),
+                Text(
+                  '🌤️ वर्णन: ${weatherData!['वर्णन']}',
+                  style: const TextStyle(fontSize: 16),
+                ),
             ],
 
             const SizedBox(height: 30),
-            const Text('पिक हवामान सल्ला', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const Text(
+              'पिक हवामान सल्ला',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const Text('तुमच्या पिकासाठी हवामान सल्ला मिळवा'),
             const SizedBox(height: 16),
 
@@ -174,7 +248,13 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
               value: selectedCrop,
               hint: const Text('पीक निवडा'),
               decoration: const InputDecoration(border: OutlineInputBorder()),
-              items: crops.map((crop) => DropdownMenuItem(value: crop, child: Text(crop))).toList(),
+              items:
+                  crops
+                      .map(
+                        (crop) =>
+                            DropdownMenuItem(value: crop, child: Text(crop)),
+                      )
+                      .toList(),
               onChanged: (val) => setState(() => selectedCrop = val),
             ),
             const SizedBox(height: 10),
@@ -183,15 +263,27 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
               value: selectedStage,
               hint: const Text('टप्पा निवडा'),
               decoration: const InputDecoration(border: OutlineInputBorder()),
-              items: stages.map((stage) => DropdownMenuItem(value: stage, child: Text(stage))).toList(),
+              items:
+                  stages
+                      .map(
+                        (stage) =>
+                            DropdownMenuItem(value: stage, child: Text(stage)),
+                      )
+                      .toList(),
               onChanged: (val) => setState(() => selectedStage = val),
             ),
             const SizedBox(height: 10),
 
             ElevatedButton.icon(
               onPressed: _fetchAdvisoryOnly,
-              icon: const Icon(Icons.refresh),
-              label: const Text('सल्ला मिळवा'),
+              icon: const Icon(
+                Icons.refresh,
+                color: Color.fromARGB(255, 255, 222, 222),
+              ),
+              label: const Text(
+                'सल्ला मिळवा',
+                style: TextStyle(color: Color.fromARGB(255, 255, 222, 222)),
+              ),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
             ),
 
@@ -200,10 +292,15 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('हवामान सल्ला', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'हवामान सल्ला',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
-                  Text(advisoryData!['सल्ला']?.join('\n') ?? 'सल्ला उपलब्ध नाही.',
-                      style: const TextStyle(fontSize: 16)),
+                  Text(
+                    advisoryData!['सल्ला']?.join('\n') ?? 'सल्ला उपलब्ध नाही.',
+                    style: const TextStyle(fontSize: 16),
+                  ),
                 ],
               ),
           ],
