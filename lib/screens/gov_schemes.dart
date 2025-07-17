@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class SchemesScreen extends StatefulWidget {
   @override
@@ -11,6 +12,7 @@ class _SchemesScreenState extends State<SchemesScreen> {
   Set<String> _selectedNeeds = {};
   bool _showAllSchemes = false;
   List<dynamic>? _recommendations;
+  bool _loading = false;
 
   final TextEditingController _districtController = TextEditingController();
   final TextEditingController _landSizeController = TextEditingController();
@@ -22,20 +24,43 @@ class _SchemesScreenState extends State<SchemesScreen> {
   String? _selectedFarmerCategory;
 
   final List<String> _states = [
-    'महाराष्ट्र', 'पंजाब', 'हरियाणा', 'उत्तर प्रदेश',
-    'गुजरात', 'राजस्थान', 'कर्नाटक', 'तमिळनाडू'
+    'महाराष्ट्र',
+    'पंजाब',
+    'हरियाणा',
+    'उत्तर प्रदेश',
+    'गुजरात',
+    'राजस्थान',
+    'कर्नाटक',
+    'तमिळनाडू',
   ];
   final List<String> _crops = [
-    'गहू', 'तांदूळ', 'टोमॅटो', 'कांदा', 'कापूस', 'ऊस', 'बटाटा', 'मका'
+    'गहू',
+    'तांदूळ',
+    'टोमॅटो',
+    'कांदा',
+    'कापूस',
+    'ऊस',
+    'बटाटा',
+    'मका',
   ];
   final List<String> _soilTypes = [
-    'चिकणमाती', 'वालुकामय', 'काळी माती', 'लाल माती', 'गार माती', 'पांढरी माती'
+    'चिकणमाती',
+    'वालुकामय',
+    'काळी माती',
+    'लाल माती',
+    'गार माती',
+    'पांढरी माती',
   ];
-  final List<String> _farmerCategories = [
-    'लहान', 'मध्यम', 'मोठे', 'इतर'
-  ];
+  final List<String> _farmerCategories = ['लहान', 'मध्यम', 'मोठे', 'इतर'];
   final List<String> _needsChips = [
-    'सिंचन', 'साठवणूक', 'यंत्रसामग्री', 'बियाणे', 'खते', 'कर्ज', 'विमा', 'प्रशिक्षण'
+    'सिंचन',
+    'साठवणूक',
+    'यंत्रसामग्री',
+    'बियाणे',
+    'खते',
+    'कर्ज',
+    'विमा',
+    'प्रशिक्षण',
   ];
 
   Future<void> fetchAIRecommendations() async {
@@ -47,12 +72,19 @@ class _SchemesScreenState extends State<SchemesScreen> {
     final category = _selectedFarmerCategory;
     final needs = _needsController.text.trim();
 
-    if (state == null || crop == null || soilType == null || category == null || district.isEmpty || landSize.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('कृपया सर्व फील्ड भरा')),
-      );
+    if (state == null ||
+        crop == null ||
+        soilType == null ||
+        category == null ||
+        district.isEmpty ||
+        landSize.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('कृपया सर्व फील्ड भरा')));
       return;
     }
+
+    setState(() => _loading = true);
 
     final uri = Uri.parse(
       'https://krushi-ai.onrender.com/schemes/gemini-recommend'
@@ -69,181 +101,273 @@ class _SchemesScreenState extends State<SchemesScreen> {
       final res = await http.get(uri, headers: {'accept': 'application/json'});
       if (res.statusCode == 200) {
         final jsonRes = jsonDecode(res.body);
-        setState(() {
-          _recommendations = jsonRes['schemes'];
-        });
+        setState(() => _recommendations = jsonRes['schemes']);
       } else {
         print('Failed: ${res.statusCode}');
       }
     } catch (e) {
       print('Error: $e');
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
-  Widget _buildRecommendationsCard() {
-    if (_recommendations == null) {
-      return Container();
-    }
-
-    if (_recommendations!.isEmpty) {
-      return Center(child: Text('शिफारसी सापडल्या नाहीत'));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: _recommendations!.map((scheme) {
-        return Card(
-          margin: EdgeInsets.symmetric(vertical: 6),
-          child: ListTile(
-            leading: Icon(Icons.account_balance_wallet_outlined, color: Colors.green),
-            title: Text(scheme['name'] ?? 'नाव नसलेली योजना'),
-            subtitle: Text(scheme['description'] ?? ''),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildTabButton(String title, bool selected) {
-    return Container(
-      height: 40,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: selected ? Colors.white : Color(0xFFF5F5F5),
-        border: Border.all(color: selected ? Colors.green : Colors.transparent),
-        borderRadius: BorderRadius.circular(8),
+  Widget _buildDropdown(
+    String label,
+    List<String> items,
+    String? selected,
+    ValueChanged<String?> onChanged,
+  ) {
+    return DropdownButtonFormField2<String>(
+      isExpanded: true,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
       ),
-      child: Text(
-        title,
-        style: TextStyle(fontWeight: FontWeight.w600, color: Colors.green),
+      value: selected,
+      onChanged: _loading ? null : onChanged,
+      items:
+          items
+              .map(
+                (item) =>
+                    DropdownMenuItem<String>(value: item, child: Text(item)),
+              )
+              .toList(),
+      buttonStyleData: ButtonStyleData(height: 55),
+      dropdownStyleData: DropdownStyleData(
+        maxHeight: 200,
+        scrollbarTheme: ScrollbarThemeData(
+          thumbColor: MaterialStateProperty.all(Colors.green.shade300),
+          trackColor: MaterialStateProperty.all(Colors.grey[300]),
+          radius: Radius.circular(8),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      menuItemStyleData: MenuItemStyleData(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       ),
     );
-  }
-
-  Widget _buildAllSchemesView() {
-    return Center(child: Text("सर्व योजनांचे दृश्य"));
   }
 
   Widget _buildAISchemeAdvisorView() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DropdownButtonFormField<String>(
-          value: _selectedState,
-          items: _states.map((state) => DropdownMenuItem(value: state, child: Text(state))).toList(),
-          onChanged: (val) => setState(() => _selectedState = val),
-          decoration: InputDecoration(labelText: 'राज्य'),
+        _buildDropdown(
+          'राज्य',
+          _states,
+          _selectedState,
+          (val) => setState(() => _selectedState = val),
         ),
+        SizedBox(height: 10),
         TextField(
           controller: _districtController,
-          decoration: InputDecoration(labelText: 'जिल्हा'),
+          decoration: InputDecoration(
+            labelText: 'जिल्हा',
+            border: OutlineInputBorder(),
+          ),
+          enabled: !_loading,
         ),
-        DropdownButtonFormField<String>(
-          value: _selectedCrop,
-          items: _crops.map((crop) => DropdownMenuItem(value: crop, child: Text(crop))).toList(),
-          onChanged: (val) => setState(() => _selectedCrop = val),
-          decoration: InputDecoration(labelText: 'पीक'),
+        SizedBox(height: 10),
+        _buildDropdown(
+          'पीक',
+          _crops,
+          _selectedCrop,
+          (val) => setState(() => _selectedCrop = val),
         ),
+        SizedBox(height: 10),
         TextField(
           controller: _landSizeController,
-          decoration: InputDecoration(labelText: 'जमिनीचे क्षेत्रफळ'),
+          decoration: InputDecoration(
+            labelText: 'जमिनीचे क्षेत्रफळ',
+            border: OutlineInputBorder(),
+          ),
+          enabled: !_loading,
         ),
-        DropdownButtonFormField<String>(
-          value: _selectedSoilType,
-          items: _soilTypes.map((soil) => DropdownMenuItem(value: soil, child: Text(soil))).toList(),
-          onChanged: (val) => setState(() => _selectedSoilType = val),
-          decoration: InputDecoration(labelText: 'मातीचा प्रकार'),
+        SizedBox(height: 10),
+        _buildDropdown(
+          'मातीचा प्रकार',
+          _soilTypes,
+          _selectedSoilType,
+          (val) => setState(() => _selectedSoilType = val),
         ),
-        DropdownButtonFormField<String>(
-          value: _selectedFarmerCategory,
-          items: _farmerCategories.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
-          onChanged: (val) => setState(() => _selectedFarmerCategory = val),
-          decoration: InputDecoration(labelText: 'शेतकऱ्याचा प्रकार'),
+        SizedBox(height: 10),
+        _buildDropdown(
+          'शेतकऱ्याचा प्रकार',
+          _farmerCategories,
+          _selectedFarmerCategory,
+          (val) => setState(() => _selectedFarmerCategory = val),
         ),
+        SizedBox(height: 10),
         TextField(
           controller: _needsController,
-          decoration: InputDecoration(labelText: 'गरजा (स्वल्पविरामाने विभक्त)'),
+          decoration: InputDecoration(
+            labelText: 'गरजा (स्वल्पविरामाने विभक्त)',
+            border: OutlineInputBorder(),
+          ),
+          enabled: !_loading,
         ),
+        SizedBox(height: 10),
         Wrap(
           spacing: 8,
-          children: _needsChips.map((chip) {
-            final selected = _selectedNeeds.contains(chip);
-            return ChoiceChip(
-              label: Text(chip),
-              selected: selected,
-              onSelected: (bool selected) {
-                setState(() {
-                  if (selected) {
-                    _selectedNeeds.add(chip);
-                  } else {
-                    _selectedNeeds.remove(chip);
-                  }
-                  _needsController.text = _selectedNeeds.join(', ');
-                });
-              },
-            );
-          }).toList(),
+          children:
+              _needsChips.map((chip) {
+                final selected = _selectedNeeds.contains(chip);
+                return ChoiceChip(
+                  label: Text(chip),
+                  selected: selected,
+                  onSelected:
+                      _loading
+                          ? null
+                          : (bool selected) {
+                            setState(() {
+                              if (selected) {
+                                _selectedNeeds.add(chip);
+                              } else {
+                                _selectedNeeds.remove(chip);
+                              }
+                              _needsController.text = _selectedNeeds.join(', ');
+                            });
+                          },
+                );
+              }).toList(),
         ),
         SizedBox(height: 16),
         ElevatedButton(
-          onPressed: fetchAIRecommendations,
-          child: Text('AI शिफारसी मिळवा'),
+          onPressed: _loading ? null : fetchAIRecommendations,
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+          child:
+              _loading
+                  ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                  : Text(
+                    'AI शिफारसी मिळवा',
+                    style: TextStyle(color: Colors.white),
+                  ),
         ),
       ],
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text('सरकारी योजना', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.language, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
+  Widget _buildRecommendationsCard() {
+    if (_recommendations == null) return Container();
+    if (_recommendations!.isEmpty) {
+      return Center(child: Text('शिफारसी सापडल्या नाहीत'));
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children:
+          _recommendations!.map((scheme) {
+            return Card(
+              margin: EdgeInsets.symmetric(vertical: 6),
+              child: ListTile(
+                leading: Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: Colors.green,
+                ),
+                title: Text(scheme['name'] ?? 'नाव नसलेली योजना'),
+                subtitle: Text(scheme['description'] ?? ''),
+              ),
+            );
+          }).toList(),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.green.shade50,
+        borderRadius: BorderRadius.circular(8),
       ),
-      body: Column(
+      child: Row(
         children: [
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _showAllSchemes = false),
-                    child: _buildTabButton('AI योजना सल्लागार', !_showAllSchemes),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _showAllSchemes = false),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: !_showAllSchemes ? Colors.green : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'AI योजना सल्लागार',
+                  style: TextStyle(
+                    color: !_showAllSchemes ? Colors.white : Colors.green,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ],
-            ),
-          ),
-          SizedBox(height: 16),
-          Expanded(
-            child: _showAllSchemes ? _buildAllSchemesView() : SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAISchemeAdvisorView(),
-                  SizedBox(height: 20),
-                  _buildRecommendationsCard(),
-                ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        AbsorbPointer(
+          absorbing: _loading,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                'सरकारी योजना',
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.green,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            body: Column(
+              children: [
+                SizedBox(height: 16),
+                _buildTabBar(),
+                SizedBox(height: 16),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _showAllSchemes
+                            ? Center(child: Text("सर्व योजनांचे दृश्य"))
+                            : _buildAISchemeAdvisorView(),
+                        SizedBox(height: 20),
+                        _buildRecommendationsCard(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_loading)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.2),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          ),
+      ],
     );
   }
 }

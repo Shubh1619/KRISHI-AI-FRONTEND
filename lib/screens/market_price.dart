@@ -3,13 +3,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class MandiPricesScreen extends StatefulWidget {
+  const MandiPricesScreen({super.key});
+
   @override
-  _MandiPricesScreenState createState() => _MandiPricesScreenState();
+  State<MandiPricesScreen> createState() => _MandiPricesScreenState();
 }
 
 class _MandiPricesScreenState extends State<MandiPricesScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
   final cropController = TextEditingController();
   final daysController = TextEditingController();
   final stateController = TextEditingController();
@@ -21,8 +24,8 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -36,35 +39,62 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
   }
 
   Future<void> fetchLatestPrices() async {
-    setState(() => isLoading = true);
     final crop = cropController.text.trim();
     final state = stateController.text.trim();
+
+    if (crop.isEmpty || state.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('कृपया पिकाचे नाव आणि राज्य प्रविष्ट करा'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+      latestData = null;
+    });
+
     final url = Uri.parse(
       'https://krushi-ai.onrender.com/mandi/latest?crop=$crop&state=$state',
     );
+
     try {
       final res = await http.get(url);
       if (res.statusCode == 200) {
         setState(() {
           latestData = json.decode(res.body);
         });
-      } else {
-        setState(() {
-          latestData = null;
-        });
       }
-    } catch (_) {}
+    } catch (_) {
+      setState(() => latestData = null);
+    }
+
     setState(() => isLoading = false);
   }
 
   Future<void> fetchHistoryPrices() async {
-    setState(() => isLoading = true);
     final crop = cropController.text.trim();
     final district = districtController.text.trim();
     final days = daysController.text.trim();
+
+    if (crop.isEmpty || district.isEmpty || days.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('कृपया सर्व फील्ड भरावेत')));
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+      historyData = null;
+    });
+
     final url = Uri.parse(
       'https://krushi-ai.onrender.com/mandi/history?crop=$crop&district=$district&days=$days',
     );
+
     try {
       final res = await http.get(url);
       if (res.statusCode == 200) {
@@ -72,12 +102,11 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
         setState(() {
           historyData = response['history'];
         });
-      } else {
-        setState(() {
-          historyData = null;
-        });
       }
-    } catch (_) {}
+    } catch (_) {
+      setState(() => historyData = null);
+    }
+
     setState(() => isLoading = false);
   }
 
@@ -115,18 +144,34 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
           _buildButton('🔎 शोधा', fetchLatestPrices),
           const SizedBox(height: 20),
           if (isLoading) const Center(child: CircularProgressIndicator()),
-          if (latestData != null) ...[
-            _buildInfoCard('📦 पीक', latestData!['पीक'] ?? '--'),
-            _buildInfoCard('🏞️ राज्य', latestData!['राज्य'] ?? '--'),
-            _buildInfoCard('💰 किंमत', '₹${latestData!['नवीनतम किंमत']}'),
-          ],
+          if (!isLoading && latestData != null && latestData!.isNotEmpty) ...[
+            const Text(
+              '⏬ मिळालेली माहिती:',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildInfoCard('📦 पीक', latestData!['पीक'] ?? 'माहिती नाही'),
+            _buildInfoCard('🏞️ राज्य', latestData!['राज्य'] ?? 'माहिती नाही'),
+            _buildInfoCard(
+              '💰 किंमत',
+              '₹${latestData!['नवीनतम किंमत'] ?? '--'}',
+            ),
+          ] else if (!isLoading && latestData == null)
+            const Text(
+              'माहिती मिळाली नाही',
+              style: TextStyle(color: Colors.red),
+            ),
         ],
       ),
     );
   }
 
   Widget _buildHistoryTab() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
@@ -141,34 +186,46 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
           ),
           const SizedBox(height: 16),
           _buildButton('📊 इतिहास पाहा', fetchHistoryPrices),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           if (isLoading)
-            const Center(child: CircularProgressIndicator()),
-          if (historyData != null)
-            Expanded(
-              child: ListView.builder(
-                itemCount: historyData!.length,
-                itemBuilder: (context, index) {
-                  final item = historyData![index];
-                  return Card(
-                    color: Colors.white,
-                    elevation: 4,
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 6,
-                    ),
-                    child: ListTile(
-                      leading: const Icon(
-                        Icons.calendar_month,
-                        color: Colors.green,
-                      ),
-                      title: Text('📅 दिनांक: ${item['दिनांक']}'),
-                      subtitle: Text('💵 दर: ₹${item['किंमत']}'),
-                    ),
-                  );
-                },
+            const Center(child: CircularProgressIndicator())
+          else if (historyData != null && historyData!.isNotEmpty) ...[
+            const Text(
+              '⏬ मागील दर माहिती:',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
               ),
             ),
+            const SizedBox(height: 8),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: historyData!.length,
+              itemBuilder: (context, index) {
+                final item = historyData![index];
+                return Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 6,
+                  ),
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.calendar_month,
+                      color: Colors.green,
+                    ),
+                    title: Text(
+                      '📅 दिनांक: ${item['दिनांक'] ?? 'माहिती नाही'}',
+                    ),
+                    subtitle: Text('💵 दर: ₹${item['किंमत'] ?? 'माहिती नाही'}'),
+                  ),
+                );
+              },
+            ),
+          ] else if (historyData != null && historyData!.isEmpty)
+            const Text('डेटा उपलब्ध नाही', style: TextStyle(color: Colors.red)),
         ],
       ),
     );
