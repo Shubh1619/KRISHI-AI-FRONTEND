@@ -323,12 +323,35 @@ class _ContactFormState extends State<_ContactForm> {
   final _emailController = TextEditingController();
   final _messageController = TextEditingController();
 
+  bool _isNameValid = true;
+  bool _isEmailValid = true;
+  bool _isMessageValid = true;
+
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _messageController.dispose();
     super.dispose();
+  }
+
+  InputDecoration _getInputDecoration({
+    required String label,
+    required Icon icon,
+    required bool isValid,
+  }) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: icon,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: isValid ? Colors.green : Colors.red),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: isValid ? Colors.grey : Colors.red),
+      ),
+      errorText: isValid ? null : 'कृपया वैध माहिती प्रविष्ट करा',
+    );
   }
 
   @override
@@ -339,54 +362,92 @@ class _ContactFormState extends State<_ContactForm> {
         children: [
           TextFormField(
             controller: _nameController,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: InputDecoration(
               labelText: 'तुमचे नाव',
               prefixIcon: const Icon(Icons.person),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-            ),
-            validator:
-                (value) =>
-                    value == null || value.isEmpty
-                        ? 'कृपया नाव प्रविष्ट करा'
-                        : null,
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _emailController,
-            decoration: InputDecoration(
-              labelText: 'ईमेल',
-              prefixIcon: const Icon(Icons.email),
-              border: OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color:
+                      _nameController.text.isNotEmpty
+                          ? Colors.grey
+                          : const Color.fromARGB(255, 148, 145, 145),
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color:
+                      _nameController.text.isNotEmpty
+                          ? Colors.green
+                          : Color.fromARGB(255, 148, 145, 145),
+                  width: 2,
+                ),
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
+            validator:
+                (value) =>
+                    value == null || value.trim().isEmpty
+                        ? 'कृपया नाव प्रविष्ट करा'
+                        : null,
+            onChanged: (value) {
+              setState(() {}); // Refreshes the widget when input changes
+            },
+          ),
+
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _emailController,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            keyboardType: TextInputType.emailAddress,
+            decoration: _getInputDecoration(
+              label: 'ईमेल',
+              icon: const Icon(Icons.email),
+              isValid: _isEmailValid,
+            ),
+            onChanged: (value) {
+              setState(() {
+                _isEmailValid = value.contains('@');
+              });
+            },
             validator: (value) {
-              if (value == null || value.isEmpty)
+              if (value == null || value.isEmpty) {
                 return 'कृपया ईमेल प्रविष्ट करा';
-              if (!value.contains('@')) return 'वैध ईमेल प्रविष्ट करा';
+              }
+              if (!value.contains('@')) {
+                return 'वैध ईमेल प्रविष्ट करा';
+              }
               return null;
             },
           ),
+
           const SizedBox(height: 12),
           TextFormField(
             controller: _messageController,
             maxLines: 4,
-            decoration: InputDecoration(
-              labelText: 'संदेश',
-              alignLabelWithHint: true,
-              prefixIcon: const Icon(Icons.message),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            onChanged: (value) {
+              setState(() {
+                _isMessageValid = value.isNotEmpty;
+              });
+            },
+            decoration: _getInputDecoration(
+              label: 'संदेश',
+              icon: const Icon(Icons.message),
+              isValid: _isMessageValid,
             ),
-            validator:
-                (value) =>
-                    value == null || value.isEmpty
-                        ? 'कृपया संदेश प्रविष्ट करा'
-                        : null,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'कृपया संदेश प्रविष्ट करा';
+              }
+              return null;
+            },
           ),
+
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {
@@ -399,6 +460,11 @@ class _ContactFormState extends State<_ContactForm> {
                 _nameController.clear();
                 _emailController.clear();
                 _messageController.clear();
+                setState(() {
+                  _isNameValid = true;
+                  _isEmailValid = true;
+                  _isMessageValid = true;
+                });
               }
             },
             icon: const Icon(Icons.send),

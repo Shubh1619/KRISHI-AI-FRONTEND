@@ -1,4 +1,4 @@
-package com.example.krishi_ai
+Rpackage com.example.krishi_ai
 
 import io.flutter.embedding.android.FlutterActivity
 
