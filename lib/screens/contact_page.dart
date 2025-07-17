@@ -5,13 +5,13 @@ class ContactPage extends StatelessWidget {
   const ContactPage({super.key});
 
   Future<void> _launchPhone(BuildContext context) async {
-    final Uri phoneUri = Uri(scheme: 'tel', path: '8745XXXXXX');
+    final Uri phoneUri = Uri(scheme: 'tel', path: '8856832687');
     if (await canLaunchUrl(phoneUri)) {
       await launchUrl(phoneUri);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('फोन लाँच करणे शक्य नाही')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('फोन लाँच करणे शक्य नाही')));
     }
   }
 
@@ -23,9 +23,9 @@ class ContactPage extends StatelessWidget {
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ईमेल लाँच करणे शक्य नाही')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('ईमेल लाँच करणे शक्य नाही')));
     }
   }
 
@@ -33,15 +33,15 @@ class ContactPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('आमच्याशी संपर्क साधा',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'आमच्याशी संपर्क साधा',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.green[800],
         elevation: 10,
         centerTitle: true,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          ),
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: SingleChildScrollView(
@@ -63,11 +63,14 @@ class ContactPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
-                        Text('कृषी AI',
-                            style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green)),
+                        Text(
+                          'कृषी AI',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
                         SizedBox(height: 8),
                         Text(
                           'शेतकऱ्यांसाठी AI-आधारित समाधाने. आम्ही पीक निदान, बाजारभाव आणि हवामान सल्ला सेवा पुरवतो.',
@@ -89,17 +92,20 @@ class ContactPage extends StatelessWidget {
               childAspectRatio: 0.8,
               children: const [
                 _StatCard(
-                    icon: Icons.people,
-                    title: '५०K+',
-                    subtitle: 'आनंदी शेतकरी'),
+                  icon: Icons.people,
+                  title: '५०K+',
+                  subtitle: 'आनंदी शेतकरी',
+                ),
                 _StatCard(
-                    icon: Icons.verified,
-                    title: '९५%',
-                    subtitle: 'अचूकता दर'),
+                  icon: Icons.verified,
+                  title: '९५%',
+                  subtitle: 'अचूकता दर',
+                ),
                 _StatCard(
-                    icon: Icons.support_agent,
-                    title: '२४/७',
-                    subtitle: 'सपोर्ट'),
+                  icon: Icons.support_agent,
+                  title: '२४/७',
+                  subtitle: 'सपोर्ट',
+                ),
               ],
             ),
             const SizedBox(height: 24),
@@ -112,21 +118,25 @@ class ContactPage extends StatelessWidget {
                 runSpacing: 10,
                 children: const [
                   _ServiceChip(
-                      icon: Icons.medical_services,
-                      label: 'रोग ओळख',
-                      color: Colors.orange),
+                    icon: Icons.medical_services,
+                    label: 'रोग ओळख',
+                    color: Colors.orange,
+                  ),
                   _ServiceChip(
-                      icon: Icons.attach_money,
-                      label: 'बाजारभाव',
-                      color: Colors.green),
+                    icon: Icons.attach_money,
+                    label: 'बाजारभाव',
+                    color: Colors.green,
+                  ),
                   _ServiceChip(
-                      icon: Icons.cloud,
-                      label: 'हवामान सल्ला',
-                      color: Colors.blue),
+                    icon: Icons.cloud,
+                    label: 'हवामान सल्ला',
+                    color: Colors.blue,
+                  ),
                   _ServiceChip(
-                      icon: Icons.lightbulb,
-                      label: 'शेती सल्ला',
-                      color: Colors.purple),
+                    icon: Icons.lightbulb,
+                    label: 'शेती सल्ला',
+                    color: Colors.purple,
+                  ),
                 ],
               ),
             ),
@@ -145,7 +155,7 @@ class ContactPage extends StatelessWidget {
                     child: ListTile(
                       leading: const Icon(Icons.phone, color: Colors.green),
                       title: const Text('फोन'),
-                      subtitle: const Text('८७४५XXXXXX'),
+                      subtitle: const Text('८८५६८३२६८७'),
                       trailing: IconButton(
                         icon: const Icon(Icons.call, color: Colors.green),
                         onPressed: () => _launchPhone(context),
@@ -185,12 +195,15 @@ class ContactPage extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.green[800],
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: const Center(
-                child: Text('© २०२४ कृषी AI. सर्व हक्क राखीव.',
-                    style: TextStyle(color: Colors.white)),
+                child: Text(
+                  '© २०२४ कृषी AI. सर्व हक्क राखीव.',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],
@@ -211,11 +224,14 @@ class ContactPage extends StatelessWidget {
           children: [
             Icon(icon, color: Colors.green[700]),
             const SizedBox(width: 8),
-            Text(title,
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green[700])),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[700],
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -248,15 +264,20 @@ class _StatCard extends StatelessWidget {
           children: [
             Icon(icon, size: 30, color: Colors.green[700]),
             const SizedBox(height: 8),
-            Text(title,
-                style: TextStyle(
-                    fontSize: 22,
-                    color: Colors.green[800],
-                    fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 22,
+                color: Colors.green[800],
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12)),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12),
+            ),
           ],
         ),
       ),
@@ -325,8 +346,11 @@ class _ContactFormState extends State<_ContactForm> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'कृपया नाव प्रविष्ट करा' : null,
+            validator:
+                (value) =>
+                    value == null || value.isEmpty
+                        ? 'कृपया नाव प्रविष्ट करा'
+                        : null,
           ),
           const SizedBox(height: 12),
           TextFormField(
@@ -339,7 +363,8 @@ class _ContactFormState extends State<_ContactForm> {
               ),
             ),
             validator: (value) {
-              if (value == null || value.isEmpty) return 'कृपया ईमेल प्रविष्ट करा';
+              if (value == null || value.isEmpty)
+                return 'कृपया ईमेल प्रविष्ट करा';
               if (!value.contains('@')) return 'वैध ईमेल प्रविष्ट करा';
               return null;
             },
@@ -356,15 +381,20 @@ class _ContactFormState extends State<_ContactForm> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'कृपया संदेश प्रविष्ट करा' : null,
+            validator:
+                (value) =>
+                    value == null || value.isEmpty
+                        ? 'कृपया संदेश प्रविष्ट करा'
+                        : null,
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('धन्यवाद! आपला संदेश पाठवला गेला आहे.')),
+                  const SnackBar(
+                    content: Text('धन्यवाद! आपला संदेश पाठवला गेला आहे.'),
+                  ),
                 );
                 _nameController.clear();
                 _emailController.clear();

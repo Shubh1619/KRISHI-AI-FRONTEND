@@ -5,6 +5,8 @@ import 'login_page.dart';
 import 'market_price.dart';
 import 'gov_schemes.dart';
 import 'help_support.dart';
+import 'group_chat_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatelessWidget {
   final String farmerName;
@@ -75,7 +77,12 @@ class MainPage extends StatelessWidget {
         'color': Colors.indigo,
         'title': 'समूह चर्चा',
         'subtitle': 'शेतकरी एकत्र जोडा',
-        'onTap': () {},
+        'onTap': () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const GroupChatPage()),
+          );
+        },
       },
       {
         'icon': Icons.calculate,
@@ -145,15 +152,19 @@ class MainPage extends StatelessWidget {
                   onTap:
                       () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const HelpSupportPage()),
+                        MaterialPageRoute(
+                          builder: (context) => const HelpSupportPage(),
+                        ),
                       ),
                 ),
                 ListTile(
                   leading: const Icon(Icons.logout),
                   title: const Text('लॉगआउट'),
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
+                  onTap: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.clear();
+
+                    Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                         builder:
                             (context) => LoginPage(

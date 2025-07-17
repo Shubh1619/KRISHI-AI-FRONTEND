@@ -29,6 +29,9 @@ dependencies:
   # URL launcher
   url_launcher: ^6.2.5
 
+  shared_preferences: ^2.0.15
+  
+
   # File/Image Pickers
   file_picker:
     git:

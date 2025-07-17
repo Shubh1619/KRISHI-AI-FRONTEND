@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard.dart';
 import 'registration_page.dart';
 import 'forget_pass.dart';
@@ -21,6 +22,32 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    final name = prefs.getString('farmerName') ?? '';
+
+    if (isLoggedIn && name.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder:
+              (context) => MainPage(
+                farmerName: name,
+                isDark: widget.isDark,
+                toggleTheme: widget.toggleTheme,
+              ),
+        ),
+      );
+    }
+  }
+
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -39,7 +66,14 @@ class _LoginPageState extends State<LoginPage> {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data['name'] != null) {
-        String farmerName = data['name'];
+        final prefs = await SharedPreferences.getInstance();
+
+        // ✅ Save required individual values
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('farmerName', data['name']);
+
+        // ✅ Save entire response for group chat
+        await prefs.setString('loginResponse', jsonEncode(data));
 
         ScaffoldMessenger.of(
           context,
@@ -50,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(
             builder:
                 (context) => MainPage(
-                  farmerName: farmerName,
+                  farmerName: data['name'],
                   isDark: widget.isDark,
                   toggleTheme: widget.toggleTheme,
                 ),
@@ -127,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _login,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: const Color.fromRGBO(76, 175, 80, 1),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child:
