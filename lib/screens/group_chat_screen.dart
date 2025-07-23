@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'chat_screen.dart';
 
 class GroupChatPage extends StatefulWidget {
-  const GroupChatPage({super.key});
+  const GroupChatPage({Key? key}) : super(key: key);
 
   @override
   State<GroupChatPage> createState() => _GroupChatPageState();
@@ -11,96 +12,110 @@ class GroupChatPage extends StatefulWidget {
 
 class _GroupChatPageState extends State<GroupChatPage> {
   List<dynamic> users = [];
-  bool isLoading = true;
+  String currentUserId = '';
+  String currentUserName = '';
 
   @override
   void initState() {
     super.initState();
-    loadUsersFromLogin();
+    loadUsersFromPrefs();
   }
 
-  Future<void> loadUsersFromLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userData = prefs.getString('loginResponse');
+  Future<void> loadUsersFromPrefs() async {
+  final prefs = await SharedPreferences.getInstance();
+  final loginResponse = prefs.getString('loginResponse');
 
-    if (userData == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('❌ वापरकर्ता माहिती सापडली नाही')),
-      );
-      return;
-    }
-
+  if (loginResponse != null) {
     try {
-      final decoded = jsonDecode(userData);
-      final List<dynamic> allUsers = decoded['users'];
-      final int currentUserId = decoded['user_id'];
+      final data = jsonDecode(loginResponse);
+      print('🧾 Raw loginResponse: $data');
 
-      // Remove current user from list
-      allUsers.removeWhere((user) => user['id'] == currentUserId);
+      final allUsers = data['users'] ?? [];
+      final extractedUserId = data['user_id'];
+      final extractedUserName = data['name'];
 
       setState(() {
         users = allUsers;
-        isLoading = false;
+        currentUserId = extractedUserId?.toString() ?? '';
+        currentUserName = extractedUserName ?? '';
       });
+
+      print('✅ Extracted Current User ID: $currentUserId');
+      print('✅ Extracted Current User Name: $currentUserName');
+
+      for (var user in allUsers) {
+        print('👥 Found user: ${user['name']} (${user['id']})');
+      }
     } catch (e) {
-      print("Decode error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('❌ डेटा प्रक्रिया करताना त्रुटी आली')),
-      );
+      print('❌ Error decoding loginResponse: $e');
     }
+  } else {
+    print('❌ loginResponse not found in SharedPreferences');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
+    final otherUsers = users.where((u) => u['id'].toString() != currentUserId).toList();
+
     return Scaffold(
-      backgroundColor: Colors.purple[50],
       appBar: AppBar(
-        title: const Text('समूह चर्चा', style: TextStyle(color: Colors.white)),
+        title: const Text('समूह चर्चा'),
         backgroundColor: const Color.fromRGBO(76, 175, 80, 1),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
-      body:
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : users.isEmpty
-              ? const Center(child: Text('❗️ इतर शेतकरी सापडले नाहीत'))
-              : ListView.builder(
-                padding: const EdgeInsets.all(12),
-                itemCount: users.length,
-                itemBuilder: (context, index) {
-                  final user = users[index];
-                  return Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.indigo[100],
-                        child: const Icon(
-                          Icons.person,
-                          color: Color.fromRGBO(76, 175, 80, 1),
-                        ),
-                      ),
-                      title: Text(
-                        user['name'] ?? 'नाव नाही',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      trailing: const Icon(
-                        Icons.chat,
+      body: otherUsers.isEmpty
+          ? const Center(child: Text("No other users available"))
+          : ListView.builder(
+              itemCount: otherUsers.length,
+              itemBuilder: (context, index) {
+                final user = otherUsers[index];
+                final userId = user['id'].toString();
+                final userName = user['name']?.toString().trim() ?? 'नाव नाही';
+
+                return Card(
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 12,
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.indigo[100],
+                      child: const Icon(
+                        Icons.person,
                         color: Color.fromRGBO(76, 175, 80, 1),
                       ),
-                      onTap: () {
-                        // 🔄 Navigate to ChatScreen(user)
-                      },
                     ),
-                  );
-                },
-              ),
+                    title: Text(
+                      userName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    trailing: const Icon(
+                      Icons.chat,
+                      color: Color.fromRGBO(76, 175, 80, 1),
+                    ),
+                    onTap: () {
+                      print('📲 Tapped on user: $userName ($userId)');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChatScreen(
+                            currentUserId: currentUserId,
+                            currentUserName: currentUserName,
+                            recipientUserId: userId,
+                            recipientUserName: userName,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
     );
   }
 }
