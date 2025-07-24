@@ -22,7 +22,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     try {
       final response = await http.post(
         // Uri.parse('https://krushi-ai.onrender.com/auth/auth/forgot-password'),
-        Uri.parse('http://13.234.76.137:8000/auth/auth/forgot-password'),
+        Uri.parse('http://3.108.54.131:8000/auth/auth/forgot-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': _emailController.text.trim()}),
       );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -10,12 +11,12 @@ class ChatScreen extends StatefulWidget {
   final String recipientUserName;
 
   const ChatScreen({
-    Key? key,
+    super.key,
     required this.currentUserId,
     required this.currentUserName,
     required this.recipientUserId,
     required this.recipientUserName,
-  }) : super(key: key);
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -29,31 +30,66 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    fetchChatHistory();
+    connectWebSocket();
+  }
+
+  void connectWebSocket() {
     final uri = Uri.parse(
-      // 'wss://krushi-ai.onrender.com/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
-      'wss://13.234.76.137:8000/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
+      'ws://3.108.54.131:8000/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
     );
 
     print("🔗 Connecting to WebSocket: $uri");
-
     channel = WebSocketChannel.connect(uri);
 
-    channel.stream.listen((data) {
-      print("📩 Message received: $data");
-      final decoded = jsonDecode(data);
-      final from = decoded['from'] ?? '';
-      final msg = decoded['message'] ?? '';
-      setState(() {
-        messages.add({
-          'from': from,
-          'message': msg,
+    channel.stream.listen(
+      (data) {
+        print("📩 Message received: $data");
+        final decoded = jsonDecode(data);
+        final from = decoded['from'] ?? '';
+        final msg = decoded['message'] ?? '';
+        setState(() {
+          messages.add({'from': from, 'message': msg});
         });
-      });
-    }, onError: (error) {
-      print("❌ WebSocket error: $error");
-    }, onDone: () {
-      print("🔌 WebSocket connection closed.");
-    });
+      },
+      onError: (error) {
+        print("❌ WebSocket error: $error");
+      },
+      onDone: () {
+        print("🔌 WebSocket connection closed.");
+      },
+    );
+  }
+
+  void fetchChatHistory() async {
+    final url = Uri.parse(
+      'http://3.108.54.131:8000/chat/history/${widget.currentUserId}/${widget.recipientUserId}',
+    );
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> history = jsonDecode(response.body);
+        setState(() {
+          messages.clear();
+          messages.addAll(
+            history.map<Map<String, String>>((e) {
+              final from = e['from'] ?? '';
+              final encodedMessage = e['message'] ?? '';
+              String decodedMsg = '[unreadable]';
+              try {
+                decodedMsg = utf8.decode(base64.decode(encodedMessage));
+              } catch (_) {}
+              return {'from': from, 'message': decodedMsg};
+            }).toList(),
+          );
+        });
+      } else {
+        print("❌ Failed to load history: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("❌ Error fetching history: $e");
+    }
   }
 
   void sendMessage() {
@@ -64,16 +100,8 @@ class _ChatScreenState extends State<ChatScreen> {
       'from': widget.currentUserId,
       'message': msg,
     });
-
     channel.sink.add(data);
-
-    setState(() {
-      messages.add({
-        'from': widget.currentUserId,
-        'message': msg,
-      });
-      _controller.clear();
-    });
+    _controller.clear();
   }
 
   @override
@@ -83,7 +111,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  bool isSentByMe(String fromId) => fromId == widget.currentUserId;
+  bool isSentByMe(String fromId) => fromId == widget.currentUserId.toString();
 
   @override
   Widget build(BuildContext context) {
@@ -102,16 +130,22 @@ class _ChatScreenState extends State<ChatScreen> {
                 final message = messages[index];
                 final isMe = isSentByMe(message['from'] ?? '');
                 return Align(
-                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment:
+                      isMe ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     margin: const EdgeInsets.symmetric(vertical: 4),
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-                    decoration: BoxDecoration(
-                      color: isMe ? Colors.green[200] : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(12),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.75,
                     ),
-                    child: Text(message['message'] ?? ''),
+                    decoration: BoxDecoration(
+                      color: isMe ? Colors.green[100] : Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      message['message'] ?? '',
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                 );
               },
@@ -133,7 +167,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.send, color: Color.fromRGBO(76, 175, 80, 1)),
+                  icon: const Icon(
+                    Icons.send,
+                    color: Color.fromRGBO(76, 175, 80, 1),
+                  ),
                   onPressed: sendMessage,
                 ),
               ],

@@ -25,7 +25,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     try {
       final response = await http.post(
         // Uri.parse('https://krushi-ai.onrender.com/auth/auth/register'),
-        Uri.parse('http://13.234.76.137:8000/auth/auth/register'),
+        Uri.parse('http://3.108.54.131:8000/auth/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': _nameController.text.trim(),
