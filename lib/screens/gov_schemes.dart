@@ -87,7 +87,8 @@ class _SchemesScreenState extends State<SchemesScreen> {
     setState(() => _loading = true);
 
     final uri = Uri.parse(
-      'https://krushi-ai.onrender.com/schemes/gemini-recommend'
+      // 'https://krushi-ai.onrender.com/schemes/gemini-recommend'
+       'http://13.234.76.137:8000/schemes/gemini-recommend'
       '?user_state=$state'
       '&user_district=$district'
       '&user_crop=$crop'

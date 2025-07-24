@@ -30,7 +30,8 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     final uri = Uri.parse(
-      'wss://krushi-ai.onrender.com/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
+      // 'wss://krushi-ai.onrender.com/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
+      'wss://13.234.76.137:8000/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
     );
 
     print("🔗 Connecting to WebSocket: $uri");

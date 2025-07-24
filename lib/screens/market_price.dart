@@ -92,7 +92,8 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
     });
 
     final url = Uri.parse(
-      'https://krushi-ai.onrender.com/mandi/history?crop=$crop&district=$district&days=$days',
+      // 'https://krushi-ai.onrender.com/mandi/history?crop=$crop&district=$district&days=$days',
+      'http://13.234.76.137:8000/mandi/history?crop=$crop&district=$district&days=$days',
     );
 
     try {

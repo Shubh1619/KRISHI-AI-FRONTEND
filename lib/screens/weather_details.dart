@@ -23,13 +23,7 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
     'कापणी',
   ];
 
-  final List<String> crops = [
-    'गहू',
-    'तांदूळ',
-    'मका',
-    'कापूस',
-    'टोमॅटो',
-  ];
+  final List<String> crops = ['गहू', 'तांदूळ', 'मका', 'कापूस', 'टोमॅटो'];
 
   String? selectedStage;
   String? selectedCrop;
@@ -53,7 +47,8 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://krushi-ai.onrender.com/weather/current?city=$city'),
+        // Uri.parse('https://krushi-ai.onrender.com/weather/current?city=$city'),
+        Uri.parse('http://13.234.76.137:8000/weather/current?city=$city'),
       );
       if (response.statusCode == 200) {
         setState(() => weatherData = jsonDecode(response.body));
@@ -83,7 +78,8 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
     try {
       final response = await http.get(
         Uri.parse(
-          'https://krushi-ai.onrender.com/weather/advisory?crop=$selectedCrop&stage=$selectedStage&city=$city',
+          // 'https://krushi-ai.onrender.com/weather/advisory?crop=$selectedCrop&stage=$selectedStage&city=$city',
+          'http://13.234.76.137:8000/weather/advisory?crop=$selectedCrop&stage=$selectedStage&city=$city',
         ),
       );
       if (response.statusCode == 200) {

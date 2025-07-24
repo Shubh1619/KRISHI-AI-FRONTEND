@@ -102,7 +102,8 @@ class _CropDiseaseDetectionPageState extends State<CropDiseaseDetectionPage> {
     try {
       final dio = Dio(
         BaseOptions(
-          baseUrl: 'https://krushi-ai.onrender.com',
+          // baseUrl: 'https://krushi-ai.onrender.com',
+          baseUrl: 'http://13.234.76.137:8000',
           connectTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 20),
         ),
