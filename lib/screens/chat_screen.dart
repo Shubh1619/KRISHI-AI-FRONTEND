@@ -36,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void connectWebSocket() {
     final uri = Uri.parse(
-      'ws://3.108.54.131:8000/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
+      'ws://3.7.254.249:8000/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
     );
 
     print("🔗 Connecting to WebSocket: $uri");
@@ -63,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void fetchChatHistory() async {
     final url = Uri.parse(
-      'http://3.108.54.131:8000/chat/history/${widget.currentUserId}/${widget.recipientUserId}',
+      'http://3.7.254.249:8000/chat/history/${widget.currentUserId}/${widget.recipientUserId}',
     );
 
     try {

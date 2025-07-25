@@ -4,8 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 class SchemesScreen extends StatefulWidget {
+  const SchemesScreen({Key? key}) : super(key: key);
+
   @override
-  _SchemesScreenState createState() => _SchemesScreenState();
+  State<SchemesScreen> createState() => _SchemesScreenState();
 }
 
 class _SchemesScreenState extends State<SchemesScreen> {
@@ -14,7 +16,9 @@ class _SchemesScreenState extends State<SchemesScreen> {
   List<dynamic>? _recommendations;
   bool _loading = false;
 
-  final TextEditingController _districtController = TextEditingController();
+  String? _selectedDistrict;
+  List<String> _districts = [];
+  bool _districtsLoading = false;
   final TextEditingController _landSizeController = TextEditingController();
   final TextEditingController _needsController = TextEditingController();
 
@@ -23,16 +27,75 @@ class _SchemesScreenState extends State<SchemesScreen> {
   String? _selectedSoilType;
   String? _selectedFarmerCategory;
 
-  final List<String> _states = [
-    'महाराष्ट्र',
-    'पंजाब',
-    'हरियाणा',
-    'उत्तर प्रदेश',
-    'गुजरात',
-    'राजस्थान',
-    'कर्नाटक',
-    'तमिळनाडू',
-  ];
+  List<String> _states = [];
+  bool _statesLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchStates();
+  }
+
+  Future<void> _fetchDistricts(String? stateName) async {
+    if (stateName == null) return;
+    final stateIndex = _states.indexOf(stateName);
+    if (stateIndex == -1) return;
+    final stateId = stateIndex + 1; // API state_id is 1-based and matches order
+    setState(() {
+      _districtsLoading = true;
+      _districts = [];
+      _selectedDistrict = null;
+    });
+    try {
+      final uri = Uri.parse(
+        'http://3.7.254.249:8000/schemes/districts?state_id=$stateId',
+      );
+      final res = await http.get(uri);
+      if (res.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(res.body);
+        final List<dynamic> districtsList = data['districts'] ?? [];
+        setState(() {
+          _districts =
+              districtsList
+                  .map<String>((e) => e['district_name'].toString())
+                  .toList();
+        });
+      }
+    } catch (e) {
+      // Optionally handle error
+    } finally {
+      setState(() {
+        _districtsLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchStates() async {
+    setState(() {
+      _statesLoading = true;
+    });
+    try {
+      final uri = Uri.parse('http://3.7.254.249:8000/schemes/states');
+      final res = await http.get(uri);
+      if (res.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(res.body);
+        final List<dynamic> statesList = data['states'] ?? [];
+        setState(() {
+          _states =
+              statesList
+                  .map<String>((e) => e['state_name'].toString())
+                  .toList();
+        });
+      }
+    } catch (e) {
+      // Optionally handle error
+    } finally {
+      setState(() {
+        _statesLoading = false;
+      });
+    }
+  }
+
   final List<String> _crops = [
     'गहू',
     'तांदूळ',
@@ -65,7 +128,7 @@ class _SchemesScreenState extends State<SchemesScreen> {
 
   Future<void> fetchAIRecommendations() async {
     final state = _selectedState;
-    final district = _districtController.text.trim();
+    final district = _selectedDistrict ?? '';
     final crop = _selectedCrop;
     final landSize = _landSizeController.text.trim();
     final soilType = _selectedSoilType;
@@ -88,7 +151,7 @@ class _SchemesScreenState extends State<SchemesScreen> {
 
     final uri = Uri.parse(
       // 'https://krushi-ai.onrender.com/schemes/gemini-recommend'
-      'http://3.108.54.131:8000/schemes/gemini-recommend'
+      'http://3.7.254.249:8000/schemes/gemini-recommend'
       '?user_state=$state'
       '&user_district=$district'
       '&user_crop=$crop'
@@ -158,21 +221,23 @@ class _SchemesScreenState extends State<SchemesScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildDropdown(
-          'राज्य',
-          _states,
-          _selectedState,
-          (val) => setState(() => _selectedState = val),
-        ),
+        _statesLoading
+            ? Center(child: CircularProgressIndicator())
+            : _buildDropdown('राज्य', _states, _selectedState, (val) {
+              setState(() {
+                _selectedState = val;
+              });
+              _fetchDistricts(val);
+            }),
         SizedBox(height: 10),
-        TextField(
-          controller: _districtController,
-          decoration: InputDecoration(
-            labelText: 'जिल्हा',
-            border: OutlineInputBorder(),
-          ),
-          enabled: !_loading,
-        ),
+        _districtsLoading
+            ? Center(child: CircularProgressIndicator())
+            : _buildDropdown(
+              'जिल्हा',
+              _districts,
+              _selectedDistrict,
+              (val) => setState(() => _selectedDistrict = val),
+            ),
         SizedBox(height: 10),
         _buildDropdown(
           'पीक',

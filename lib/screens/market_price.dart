@@ -58,7 +58,7 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
 
     final url = Uri.parse(
       // 'https://krushi-ai.onrender.com/mandi/latest?crop=$crop&state=$state',
-      'http://3.108.54.131:8000/mandi/latest?crop=$crop&state=$state',
+      'http://3.7.254.249:8000/mandi/latest?crop=$crop&state=$state',
     );
 
     try {
@@ -94,18 +94,30 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
 
     final url = Uri.parse(
       // 'https://krushi-ai.onrender.com/mandi/history?crop=$crop&district=$district&days=$days',
-      'http://3.108.54.131:8000/mandi/history?crop=$crop&district=$district&days=$days',
+      'http://3.7.254.249:8000/mandi/history?crop=$crop&district=$district&days=$days',
     );
 
     try {
       final res = await http.get(url);
       if (res.statusCode == 200) {
         final response = json.decode(res.body);
+        print('API Response: $response');
+        List<dynamic>? dataList;
+        if (response is List) {
+          dataList = response;
+        } else if (response is Map) {
+          // Extract the list from the 'इतिहास' key as per API response
+          dataList = response['इतिहास'] is List ? response['इतिहास'] : [];
+        } else {
+          dataList = [];
+        }
         setState(() {
-          historyData = response['history'];
+          historyData = dataList;
         });
+        print('API Response: $historyData');
       }
-    } catch (_) {
+    } catch (e) {
+      print('Error: $e');
       setState(() => historyData = null);
     }
 
@@ -207,6 +219,7 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
               itemCount: historyData!.length,
               itemBuilder: (context, index) {
                 final item = historyData![index];
+                print(item);
                 return Card(
                   elevation: 4,
                   margin: const EdgeInsets.symmetric(
