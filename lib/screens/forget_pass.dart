@@ -22,7 +22,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     try {
       final response = await http.post(
         // Uri.parse('https://krushi-ai.onrender.com/auth/auth/forgot-password'),
-        Uri.parse('http://3.7.254.249:8000/auth/auth/forgot-password'),
+        Uri.parse('http://3.110.37.119:8000/auth/auth/forgot-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': _emailController.text.trim()}),
       );
@@ -31,7 +31,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? '🔗 पासवर्ड रीसेट लिंक पाठवले गेले आहे')),
+          SnackBar(
+            content: Text(
+              data['message'] ?? '🔗 पासवर्ड रीसेट लिंक पाठवले गेले आहे',
+            ),
+          ),
         );
         Navigator.pop(context);
       } else {
@@ -40,9 +44,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ त्रुटी: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('❌ त्रुटी: $e')));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -73,26 +77,33 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   labelText: 'ईमेल',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'ईमेल आवश्यक आहे' : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'ईमेल आवश्यक आहे'
+                            : null,
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
                 onPressed: _isLoading ? null : _sendResetLink,
                 icon: const Icon(Icons.send),
-                label: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text('रीसेट लिंक पाठवा'),
+                label:
+                    _isLoading
+                        ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : const Text('रीसेट लिंक पाठवा'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                 ),
               ),
             ],

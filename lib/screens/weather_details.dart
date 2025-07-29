@@ -48,7 +48,7 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
     try {
       final response = await http.get(
         // Uri.parse('https://krushi-ai.onrender.com/weather/current?city=$city'),
-        Uri.parse('http://3.7.254.249:8000/weather/current?city=$city'),
+        Uri.parse('http://3.110.37.119:8000/weather/current?city=$city'),
       );
       if (response.statusCode == 200) {
         setState(() => weatherData = jsonDecode(response.body));
@@ -79,7 +79,7 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
       final response = await http.get(
         Uri.parse(
           // 'https://krushi-ai.onrender.com/weather/advisory?crop=$selectedCrop&stage=$selectedStage&city=$city',
-          'http://3.7.254.249:8000/weather/advisory?crop=$selectedCrop&stage=$selectedStage&city=$city',
+          'http://3.110.37.119:8000/weather/advisory?crop=$selectedCrop&stage=$selectedStage&city=$city',
         ),
       );
       if (response.statusCode == 200) {

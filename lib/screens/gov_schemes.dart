@@ -48,7 +48,8 @@ class _SchemesScreenState extends State<SchemesScreen> {
     });
     try {
       final uri = Uri.parse(
-        'http://3.7.254.249:8000/schemes/districts?state_id=$stateId',
+        // 'https://krushi-ai.onrender.com/schemes/districts?state_id=$stateId',
+        'http://3.110.37.119:8000/schemes/districts?state_id=$stateId',
       );
       final res = await http.get(uri);
       if (res.statusCode == 200) {
@@ -75,7 +76,8 @@ class _SchemesScreenState extends State<SchemesScreen> {
       _statesLoading = true;
     });
     try {
-      final uri = Uri.parse('http://3.7.254.249:8000/schemes/states');
+      // final uri = Uri.parse('https://krushi-ai.onrender.com/schemes/states');
+      final uri = Uri.parse('http://3.110.37.119:8000/schemes/states');
       final res = await http.get(uri);
       if (res.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(res.body);
@@ -151,7 +153,7 @@ class _SchemesScreenState extends State<SchemesScreen> {
 
     final uri = Uri.parse(
       // 'https://krushi-ai.onrender.com/schemes/gemini-recommend'
-      'http://3.7.254.249:8000/schemes/gemini-recommend'
+      'http://3.110.37.119:8000/schemes/gemini-recommend'
       '?user_state=$state'
       '&user_district=$district'
       '&user_crop=$crop'
@@ -166,6 +168,7 @@ class _SchemesScreenState extends State<SchemesScreen> {
       if (res.statusCode == 200) {
         final jsonRes = jsonDecode(res.body);
         setState(() => _recommendations = jsonRes['schemes']);
+        print(jsonRes);
       } else {
         print('Failed: ${res.statusCode}');
       }

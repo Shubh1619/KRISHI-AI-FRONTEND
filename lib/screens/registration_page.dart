@@ -19,53 +19,60 @@ class _RegistrationPageState extends State<RegistrationPage> {
   bool _isLoading = false;
 
   Future<void> _register() async {
-  if (_formKey.currentState!.validate()) {
-    setState(() => _isLoading = true);
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
 
-    try {
-      final response = await http.post(
-        // Uri.parse('https://krushi-ai.onrender.com/auth/auth/register'),
-        Uri.parse('http://3.7.254.249:8000/auth/auth/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': _nameController.text.trim(),
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-          'mobile': _mobileController.text.trim(),
-        }),
-      );
-
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200 && data['message'] == "Registration successful") {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ नोंदणी यशस्वी!')),
+      try {
+        final response = await http.post(
+          // Uri.parse('https://krushi-ai.onrender.com/auth/auth/register'),
+          Uri.parse('http://3.110.37.119:8000/auth/auth/register'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'name': _nameController.text.trim(),
+            'email': _emailController.text.trim(),
+            'password': _passwordController.text,
+            'mobile': _mobileController.text.trim(),
+          }),
         );
 
-        // 👇 Navigate to login page after registration
-        Navigator.pushReplacement(
+        final data = jsonDecode(response.body);
+
+        if (response.statusCode == 200 &&
+            data['message'] == "Registration successful") {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('✅ नोंदणी यशस्वी!')));
+
+          // 👇 Navigate to login page after registration
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => LoginPage(isDark: false, toggleTheme: () {}),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(data['message'] ?? '❌ नोंदणी अयशस्वी')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage(isDark: false, toggleTheme: () {})),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? '❌ नोंदणी अयशस्वी')),
-        );
+        ).showSnackBar(SnackBar(content: Text('⚠️ त्रुटी: $e')));
+      } finally {
+        setState(() => _isLoading = false);
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ त्रुटी: $e')),
-      );
-    } finally {
-      setState(() => _isLoading = false);
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('नोंदणी'), backgroundColor: Colors.green),
+      appBar: AppBar(
+        title: const Text('नोंदणी'),
+        backgroundColor: Colors.green,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -88,22 +95,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'पासवर्ड'),
-                validator: (value) => value!.isEmpty ? 'पासवर्ड आवश्यक आहे' : null,
+                validator:
+                    (value) => value!.isEmpty ? 'पासवर्ड आवश्यक आहे' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _mobileController,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(labelText: 'मोबाईल नंबर'),
-                validator: (value) => value!.isEmpty ? 'मोबाईल नंबर आवश्यक आहे' : null,
+                validator:
+                    (value) => value!.isEmpty ? 'मोबाईल नंबर आवश्यक आहे' : null,
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _register,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('नोंदणी करा'),
+                child:
+                    _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('नोंदणी करा'),
               ),
             ],
           ),

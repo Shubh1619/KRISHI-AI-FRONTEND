@@ -47,7 +47,8 @@ class _GroupChatPageState extends State<GroupChatPage> {
   }
 
   Future<void> fetchUsersFromApi() async {
-    const url = 'http://3.7.254.249:8000/auth/auth/users';
+    // const url = 'https://krushi-ai.onrender.com/auth/auth/users';
+    const url = 'http://3.110.37.119:8000/auth/auth/users';
 
     try {
       final response = await http.get(

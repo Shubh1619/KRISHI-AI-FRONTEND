@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await http.post(
         // Uri.parse('https://krushi-ai.onrender.com/auth/auth/login'),
-        Uri.parse('http://3.7.254.249:8000/auth/auth/login'),
+        Uri.parse('http://3.110.37.119:8000/auth/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': _emailController.text.trim(),

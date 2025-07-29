@@ -36,7 +36,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void connectWebSocket() {
     final uri = Uri.parse(
-      'ws://3.7.254.249:8000/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
+      // 'wss://krushi-ai.onrender.com/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
+      'ws://3.110.37.119:8000/ws/chat/${widget.recipientUserId}?user_id=${widget.currentUserId}',
     );
 
     print("🔗 Connecting to WebSocket: $uri");
@@ -63,7 +64,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void fetchChatHistory() async {
     final url = Uri.parse(
-      'http://3.7.254.249:8000/chat/history/${widget.currentUserId}/${widget.recipientUserId}',
+      // 'https://krushi-ai.onrender.com/chat/history/${widget.currentUserId}/${widget.recipientUserId}',
+      'http://3.110.37.119:8000/chat/history/${widget.currentUserId}/${widget.recipientUserId}',
     );
 
     try {
@@ -96,10 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final msg = _controller.text.trim();
     if (msg.isEmpty) return;
 
-    final data = jsonEncode({
-      'from': widget.currentUserId,
-      'message': msg,
-    });
+    final data = jsonEncode({'from': widget.currentUserId, 'message': msg});
     channel.sink.add(data);
     _controller.clear();
   }
