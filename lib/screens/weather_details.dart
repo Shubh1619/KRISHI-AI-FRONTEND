@@ -14,16 +14,69 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
   final TextEditingController _cityController = TextEditingController();
 
   final List<String> stages = [
+    'बीजप्रक्रिया',
     'पेरणी',
     'अंकुरण',
-    'वाढीचा टप्पा',
-    'फूलधारण',
-    'फळधारण',
+    'प्राथमिक वाढ',
+    'मुख्य वाढीचा टप्पा',
+    'फुलोरा',
+    'फळधारणा',
     'परिपक्वता',
     'कापणी',
+    'शेती व्यवस्थापन',
   ];
 
-  final List<String> crops = ['गहू', 'तांदूळ', 'मका', 'कापूस', 'टोमॅटो'];
+  final List<String> crops = ["गहू",
+    "तांदूळ (भात)",
+    "मका",
+    "जव (बार्ली)",
+    "ज्वारी",
+    "बाजरी",
+    "नाचणी (रागी)",
+    "ओट्स",
+    "हरभरा (चना)",
+    "तूर (अरहर)",
+    "मूग",
+    "उडीद",
+    "मसूर",
+    "मटार",
+    "सोयाबीन",
+    "शेंगदाणा",
+    "मोहरी",
+    "सूर्यफूल",
+    "तीळ",
+    "एरंडी",
+    "आंबा",
+    "केळं",
+    "सफरचंद",
+    "द्राक्षे",
+    "पेरू",
+    "संत्रं",
+    "पपई",
+    "डाळिंब",
+    "टोमॅटो",
+    "बटाटा",
+    "कांदा",
+    "वांगी",
+    "कोबी",
+    "फुलकोबी",
+    "भेंडी",
+    "पालक",
+    "कापूस",
+    "ऊस",
+    "तंबाखू",
+    "चहा",
+    "कॉफी",
+    "नारळ",
+    "रबर",
+    "हळद",
+    "आले",
+    "लसूण",
+    "मिरची",
+    "धणे",
+    "वेलदोडा",
+    "काळी मिरी",
+    ];
 
   String? selectedStage;
   String? selectedCrop;
@@ -252,94 +305,144 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
                     const Text('तुमच्या पिकासाठी हवामान सल्ला मिळवा'),
                     const SizedBox(height: 16),
 
-                    /// Crop Dropdown
-                    DropdownButton2<String>(
-                      isExpanded: true,
-                      hint: const Text('पीक निवडा'),
+                    DropdownButtonFormField<String>(
                       value: selectedCrop,
+                      decoration: InputDecoration(
+                        labelText: 'पीक निवडा',
+                        labelStyle: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.2,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.2,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.green,
+                            width: 1.5,
+                          ),
+                        ),
+                        isDense: true,
+                      ),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 32, // Bigger arrow
+                        color: Colors.black54,
+                      ),
+                      dropdownColor: Colors.white,
                       items:
-                          crops
-                              .map(
-                                (item) => DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                ),
-                              )
-                              .toList(),
+                          crops.map((item) {
+                            return DropdownMenuItem<String>(
+                              value: item,
+                              child: Text(
+                                item,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            );
+                          }).toList(),
                       onChanged:
                           (value) => setState(() => selectedCrop = value),
-                      buttonStyleData: const ButtonStyleData(
-                        height: 50,
-                        padding: EdgeInsets.symmetric(horizontal: 14),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                          border: Border.fromBorderSide(
-                            BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        padding: EdgeInsets.zero,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        scrollbarTheme: ScrollbarThemeData(
-                          thumbColor: MaterialStateProperty.all(Colors.green),
-                          trackColor: MaterialStateProperty.all(
-                            Colors.green.shade100,
-                          ),
-                          thickness: MaterialStateProperty.all(6),
-                          radius: const Radius.circular(4),
-                        ),
-                      ),
+                      selectedItemBuilder:
+                          (context) =>
+                              crops
+                                  .map(
+                                    (item) => Text(
+                                      item,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  )
+                                  .toList(),
+                      menuMaxHeight: 200,
+                      // Gray scrollbar workaround: see crop_disease_detection.dart for advanced control
                     ),
 
                     const SizedBox(height: 10),
 
-                    /// Stage Dropdown
-                    DropdownButton2<String>(
-                      isExpanded: true,
-                      hint: const Text('टप्पा निवडा'),
+                    DropdownButtonFormField<String>(
                       value: selectedStage,
+                      decoration: InputDecoration(
+                        labelText: 'टप्पा निवडा',
+                        labelStyle: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.2,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1.2,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.green,
+                            width: 1.5,
+                          ),
+                        ),
+                        isDense: true,
+                      ),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 32, // Bigger arrow
+                        color: Colors.black54,
+                      ),
+                      dropdownColor: Colors.white,
                       items:
-                          stages
-                              .map(
-                                (item) => DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                ),
-                              )
-                              .toList(),
+                          stages.map((item) {
+                            return DropdownMenuItem<String>(
+                              value: item,
+                              child: Text(
+                                item,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            );
+                          }).toList(),
                       onChanged:
                           (value) => setState(() => selectedStage = value),
-                      buttonStyleData: const ButtonStyleData(
-                        height: 50,
-                        padding: EdgeInsets.symmetric(horizontal: 14),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                          border: Border.fromBorderSide(
-                            BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        padding: EdgeInsets.zero,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        scrollbarTheme: ScrollbarThemeData(
-                          thumbColor: MaterialStateProperty.all(Colors.green),
-                          trackColor: MaterialStateProperty.all(
-                            Colors.green.shade100,
-                          ),
-                          thickness: MaterialStateProperty.all(6),
-                          radius: const Radius.circular(4),
-                        ),
-                      ),
+                      selectedItemBuilder:
+                          (context) =>
+                              stages
+                                  .map(
+                                    (item) => Text(
+                                      item,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  )
+                                  .toList(),
+                      menuMaxHeight: 200,
+                      // Gray scrollbar workaround: see crop_disease_detection.dart for advanced control
                     ),
 
                     const SizedBox(height: 10),

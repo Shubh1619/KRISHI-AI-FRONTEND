@@ -185,38 +185,54 @@ class _SchemesScreenState extends State<SchemesScreen> {
     String? selected,
     ValueChanged<String?> onChanged,
   ) {
-    return DropdownButtonFormField2<String>(
-      isExpanded: true,
+    return DropdownButtonFormField<String>(
+      value: selected,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+        labelStyle: const TextStyle(fontSize: 16, color: Colors.black87),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.2),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.green, width: 1.5),
+        ),
+        isDense: true,
       ),
-      value: selected,
-      onChanged: _loading ? null : onChanged,
+      icon: const Icon(
+        Icons.keyboard_arrow_down_rounded,
+        size: 32, // Bigger arrow
+        color: Colors.black54,
+      ),
+      dropdownColor: Colors.white,
       items:
-          items
-              .map(
-                (item) =>
-                    DropdownMenuItem<String>(value: item, child: Text(item)),
-              )
-              .toList(),
-      buttonStyleData: ButtonStyleData(height: 55),
-      dropdownStyleData: DropdownStyleData(
-        maxHeight: 200,
-        scrollbarTheme: ScrollbarThemeData(
-          thumbColor: MaterialStateProperty.all(Colors.green.shade300),
-          trackColor: MaterialStateProperty.all(Colors.grey[300]),
-          radius: Radius.circular(8),
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      menuItemStyleData: MenuItemStyleData(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      ),
+          items.map((item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(item, style: const TextStyle(fontSize: 16)),
+            );
+          }).toList(),
+      onChanged: _loading ? null : onChanged,
+      selectedItemBuilder:
+          (context) =>
+              items
+                  .map(
+                    (item) => Text(item, style: const TextStyle(fontSize: 16)),
+                  )
+                  .toList(),
+      menuMaxHeight: 200,
+      // Gray scrollbar workaround: see crop_disease_detection.dart for advanced control
     );
   }
 

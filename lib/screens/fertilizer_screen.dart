@@ -104,73 +104,96 @@ class _FertilizerScreenState extends State<FertilizerScreen> {
     String? selectedValue,
     ValueChanged<String?> onChanged,
   ) {
-    return DropdownButtonFormField2<String>(
-      isExpanded: true,
+    return DropdownButtonFormField<String>(
+      value: selectedValue,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+        labelStyle: const TextStyle(fontSize: 16, color: Colors.black87),
         filled: true,
         fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.2),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.green, width: 1.5),
+        ),
+        isDense: true,
       ),
-      value: selectedValue,
-      onChanged: onChanged,
+      icon: const Icon(
+        Icons.keyboard_arrow_down_rounded,
+        size: 32, // Bigger arrow
+        color: Colors.black54,
+      ),
+      dropdownColor: Colors.white,
       items:
           items.map((item) {
-            return DropdownMenuItem<String>(value: item, child: Text(item));
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(item, style: const TextStyle(fontSize: 16)),
+            );
           }).toList(),
-      buttonStyleData: const ButtonStyleData(height: 55),
-      dropdownStyleData: DropdownStyleData(
-        maxHeight: 250,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        scrollbarTheme: ScrollbarThemeData(
-          thumbColor: MaterialStateProperty.all(Colors.green.shade300),
-        ),
-      ),
-      menuItemStyleData: const MenuItemStyleData(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      ),
+      onChanged: onChanged,
+      selectedItemBuilder:
+          (context) =>
+              items
+                  .map(
+                    (item) => Text(item, style: const TextStyle(fontSize: 16)),
+                  )
+                  .toList(),
+      menuMaxHeight: 250,
+      // Gray scrollbar workaround: see crop_disease_detection.dart for advanced control
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green.shade50,
       appBar: AppBar(
         title: const Text('💡 खत सल्ला'),
         backgroundColor: Colors.green.shade700,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildInputField(cropController, 'पिकाचे नाव'),
-            const SizedBox(height: 10),
-            _buildDropdown('मातीचा प्रकार', soilTypes, selectedSoilType, (val) {
-              setState(() => selectedSoilType = val);
-            }),
-            const SizedBox(height: 10),
-            _buildDropdown('पीक टप्पा', cropStages, selectedStage, (val) {
-              setState(() => selectedStage = val);
-            }),
-            const SizedBox(height: 20),
-            _buildButton('🔍 सल्ला मिळवा', fetchFertilizerRecommendation),
-            const SizedBox(height: 20),
-            if (isLoading)
-              const CircularProgressIndicator()
-            else ...[
-              if (recommendations.isNotEmpty)
-                ...recommendations
-                    .map((item) => _buildFertilizerCard(item))
-                    .toList(),
-              if (generalNotes != null)
-                _buildResultCard("📝 सामान्य सूचना:\n$generalNotes"),
+      body: Container(
+        color: Colors.white,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              _buildInputField(cropController, 'पिकाचे नाव'),
+              const SizedBox(height: 10),
+              _buildDropdown('मातीचा प्रकार', soilTypes, selectedSoilType, (
+                val,
+              ) {
+                setState(() => selectedSoilType = val);
+              }),
+              const SizedBox(height: 10),
+              _buildDropdown('पीक टप्पा', cropStages, selectedStage, (val) {
+                setState(() => selectedStage = val);
+              }),
+              const SizedBox(height: 20),
+              _buildButton('🔍 सल्ला मिळवा', fetchFertilizerRecommendation),
+              const SizedBox(height: 20),
+              if (isLoading)
+                const CircularProgressIndicator()
+              else ...[
+                if (recommendations.isNotEmpty)
+                  ...recommendations
+                      .map((item) => _buildFertilizerCard(item))
+                      .toList(),
+                if (generalNotes != null)
+                  _buildResultCard("📝 सामान्य सूचना:\n$generalNotes"),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

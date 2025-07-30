@@ -26,21 +26,56 @@ class _CropDiseaseDetectionPageState extends State<CropDiseaseDetectionPage> {
   final ImagePicker _picker = ImagePicker();
 
   final List<String> crops = [
-    'गहू',
-    'तांदूळ',
-    'मका',
-    'कापूस',
-    'टोमॅटो',
-    'ज्वारी',
-    'बाजरी',
-    'हरभरा',
-    'सोयाबीन',
-    'मूग',
-    'उडीद',
-    'वाटाणा',
-    'भेंडी',
-    'मिरची',
-    'वांगी',
+    "गहू",
+    "तांदूळ (भात)",
+    "मका",
+    "जव (बार्ली)",
+    "ज्वारी",
+    "बाजरी",
+    "नाचणी (रागी)",
+    "ओट्स",
+    "हरभरा (चना)",
+    "तूर (अरहर)",
+    "मूग",
+    "उडीद",
+    "मसूर",
+    "मटार",
+    "सोयाबीन",
+    "शेंगदाणा",
+    "मोहरी",
+    "सूर्यफूल",
+    "तीळ",
+    "एरंडी",
+    "आंबा",
+    "केळं",
+    "सफरचंद",
+    "द्राक्षे",
+    "पेरू",
+    "संत्रं",
+    "पपई",
+    "डाळिंब",
+    "टोमॅटो",
+    "बटाटा",
+    "कांदा",
+    "वांगी",
+    "कोबी",
+    "फुलकोबी",
+    "भेंडी",
+    "पालक",
+    "कापूस",
+    "ऊस",
+    "तंबाखू",
+    "चहा",
+    "कॉफी",
+    "नारळ",
+    "रबर",
+    "हळद",
+    "आले",
+    "लसूण",
+    "मिरची",
+    "धणे",
+    "वेलदोडा",
+    "काळी मिरी",
   ];
 
   final List<Map<String, String>> languages = [
@@ -211,45 +246,75 @@ class _CropDiseaseDetectionPageState extends State<CropDiseaseDetectionPage> {
                         ),
                         const SizedBox(height: 20),
 
-                        DropdownButton2<String>(
-                          isExpanded: true,
-                          hint: const Text('पीक निवडा'),
+                        DropdownButtonFormField<String>(
                           value: _selectedCrop,
+                          decoration: InputDecoration(
+                            labelText: 'पीक निवडा',
+                            labelStyle: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 1.2,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 1.2,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: Colors.green,
+                                width: 1.5,
+                              ),
+                            ),
+                            isDense: true,
+                          ),
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 32, // Bigger arrow
+                            color: Colors.black54,
+                          ),
+                          dropdownColor: Colors.white,
                           items:
                               crops.map((item) {
                                 return DropdownMenuItem<String>(
                                   value: item,
-                                  child: Text(item),
+                                  child: Text(
+                                    item,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
                                 );
                               }).toList(),
                           onChanged:
                               (value) => setState(() => _selectedCrop = value),
-                          buttonStyleData: const ButtonStyleData(
-                            height: 50,
-                            padding: EdgeInsets.symmetric(horizontal: 14),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
-                              ),
-                              border: Border.fromBorderSide(
-                                BorderSide(color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                          dropdownStyleData: DropdownStyleData(
-                            maxHeight: 200,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.grey),
-                            ),
-                            scrollbarTheme: ScrollbarThemeData(
-                              thumbColor: MaterialStatePropertyAll(
-                                Colors.green,
-                              ),
-                              thickness: MaterialStatePropertyAll(6),
-                              radius: Radius.circular(4),
-                            ),
-                          ),
+                          selectedItemBuilder:
+                              (context) =>
+                                  crops
+                                      .map(
+                                        (item) => Text(
+                                          item,
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                      )
+                                      .toList(),
+                          menuMaxHeight: 200,
+                          // Wrap the dropdown menu with a gray scrollbar
+                          // This is a workaround for gray scrollbar in DropdownButtonFormField
+                          // For more advanced control, use dropdown_button2 as in your previous code
                         ),
 
                         const SizedBox(height: 16),
