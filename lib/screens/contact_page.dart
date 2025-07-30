@@ -137,6 +137,26 @@ class ContactPage extends StatelessWidget {
                     label: 'शेती सल्ला',
                     color: Colors.purple,
                   ),
+                  _ServiceChip(
+                    icon: Icons.gavel,
+                    label: 'सरकारी योजना',
+                    color: Colors.teal,
+                  ),
+                  _ServiceChip(
+                    icon: Icons.group,
+                    label: 'समूह चर्चा',
+                    color: Colors.indigo,
+                  ),
+                  _ServiceChip(
+                    icon: Icons.science,
+                    label: 'खतांचा सल्ला',
+                    color: Colors.brown,
+                  ),
+                  _ServiceChip(
+                    icon: Icons.smart_toy, // You can also use Icons.robot
+                    label: 'AI सहाय्यक',
+                    color: Colors.pinkAccent,
+                  ),
                 ],
               ),
             ),

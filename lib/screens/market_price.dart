@@ -10,7 +10,7 @@ class MandiPricesScreen extends StatefulWidget {
 }
 
 class _MandiPricesScreenState extends State<MandiPricesScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabController;
 
   final cropController = TextEditingController();
@@ -38,6 +38,9 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
     super.dispose();
   }
 
+  @override
+  bool get wantKeepAlive => false;
+
   Future<void> fetchLatestPrices() async {
     final crop = cropController.text.trim();
     final state = stateController.text.trim();
@@ -57,7 +60,6 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
     });
 
     final url = Uri.parse(
-      // 'https://krushi-ai.onrender.com/mandi/latest?crop=$crop&state=$state',
       'http://3.110.37.119:8000/mandi/latest?crop=$crop&state=$state',
     );
 
@@ -93,7 +95,6 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
     });
 
     final url = Uri.parse(
-      // 'https://krushi-ai.onrender.com/mandi/history?crop=$crop&district=$district&days=$days',
       'http://3.110.37.119:8000/mandi/history?crop=$crop&district=$district&days=$days',
     );
 
@@ -101,12 +102,10 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
       final res = await http.get(url);
       if (res.statusCode == 200) {
         final response = json.decode(res.body);
-        print('API Response: $response');
         List<dynamic>? dataList;
         if (response is List) {
           dataList = response;
         } else if (response is Map) {
-          // Extract the list from the 'इतिहास' key as per API response
           dataList = response['इतिहास'] is List ? response['इतिहास'] : [];
         } else {
           dataList = [];
@@ -114,10 +113,8 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
         setState(() {
           historyData = dataList;
         });
-        print('API Response: $historyData');
       }
     } catch (e) {
-      print('Error: $e');
       setState(() => historyData = null);
     }
 
@@ -126,10 +123,11 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green.shade700,
-        title: const Text('🧾 मंडी दर माहिती'),
+        title: const Text('🧾 बाजारभाव माहिती'),
         bottom: TabBar(
           controller: _tabController,
           labelColor: Colors.white,
@@ -157,8 +155,7 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
           const SizedBox(height: 16),
           _buildButton('🔎 शोधा', fetchLatestPrices),
           const SizedBox(height: 20),
-          if (isLoading) const Center(child: CircularProgressIndicator()),
-          if (!isLoading && latestData != null && latestData!.isNotEmpty) ...[
+          if (latestData != null && latestData!.isNotEmpty) ...[
             const Text(
               '⏬ मिळालेली माहिती:',
               style: TextStyle(
@@ -174,11 +171,7 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
               '💰 किंमत',
               '₹${latestData!['नवीनतम किंमत'] ?? '--'}',
             ),
-          ] else if (!isLoading && latestData == null)
-            const Text(
-              'माहिती मिळाली नाही',
-              style: TextStyle(color: Colors.red),
-            ),
+          ],
         ],
       ),
     );
@@ -219,7 +212,6 @@ class _MandiPricesScreenState extends State<MandiPricesScreen>
               itemCount: historyData!.length,
               itemBuilder: (context, index) {
                 final item = historyData![index];
-                print(item);
                 return Card(
                   elevation: 4,
                   margin: const EdgeInsets.symmetric(

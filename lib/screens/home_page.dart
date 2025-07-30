@@ -37,10 +37,6 @@ class HomePage extends StatelessWidget {
             Text.rich(
               TextSpan(
                 children: [
-                  const TextSpan(
-                    text: "तुमचा ",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
                   TextSpan(
                     text: "स्मार्ट ",
                     style: TextStyle(
@@ -50,8 +46,23 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   const TextSpan(
-                    text: "शेती सहकारी\nसादर करत आहे: शेतकऱ्याचा मित्र",
+                    text: "शेतीचा नवा साथी — ",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: "'शेतकऱ्याचा मित्र' ",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[700],
+                    ),
+                  ),
+                  TextSpan(
+                    text: "तुमच्यासाठी! ",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -62,7 +73,7 @@ class HomePage extends StatelessWidget {
 
             /// Subheading
             Text(
-              "पिकांची काळजी, बाजारभाव आणि आधुनिक कृषी सल्ला यासाठी एआयचा वापर करा.",
+              "पिकांची काळजी, बाजारभाव आणि आधुनिक कृषी सल्ला यासाठी AI चा वापर करा.",
               style: TextStyle(
                 fontSize: 16,
                 color: isDark ? Colors.grey[300] : Colors.black54,
@@ -80,7 +91,11 @@ class HomePage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LoginPage(isDark: isDark, toggleTheme: toggleTheme),
+                        builder:
+                            (context) => LoginPage(
+                              isDark: isDark,
+                              toggleTheme: toggleTheme,
+                            ),
                       ),
                     );
                   },

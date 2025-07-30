@@ -6,6 +6,7 @@ import 'market_price.dart';
 import 'gov_schemes.dart';
 import 'help_support.dart';
 import 'group_chat_screen.dart';
+import 'fertilizer_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatelessWidget {
@@ -39,7 +40,7 @@ class MainPage extends StatelessWidget {
       {
         'icon': Icons.show_chart,
         'color': Colors.blue,
-        'title': 'मंडी दर',
+        'title': 'बाजारभाव दर',
         'subtitle': 'थेट बाजार दर व ट्रेंड्स',
         'onTap':
             () => Navigator.push(
@@ -85,11 +86,16 @@ class MainPage extends StatelessWidget {
         },
       },
       {
-        'icon': Icons.calculate,
-        'color': Colors.teal,
-        'title': 'कॅल्क्युलेटर टूल्स',
-        'subtitle': 'खते व बियाणे गणना',
-        'onTap': () {},
+        'icon': Icons.science,
+        'color': Colors.brown,
+        'title': 'खतांचा सल्ला',
+        'subtitle': 'शेतीसाठी योग्य खते वापरा',
+        'onTap': () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const FertilizerScreen()),
+          );
+        },
       },
     ];
 
