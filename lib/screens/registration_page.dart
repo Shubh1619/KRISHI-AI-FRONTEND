@@ -17,6 +17,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
@@ -37,19 +38,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
         final data = jsonDecode(response.body);
 
-        if (response.statusCode == 200 &&
-            data['message'] == "Registration successful") {
+        if ((response.statusCode == 200 || response.statusCode == 201) &&
+            data['message'] == "User registered successfully") {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('✅ नोंदणी यशस्वी!')));
 
-          // 👇 Navigate to login page after registration
-          Navigator.pushReplacement(
-            context,
+          // Navigate to login page and remove all previous routes
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder:
                   (context) => LoginPage(isDark: false, toggleTheme: () {}),
             ),
+            (route) => false,
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -93,8 +94,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'पासवर्ड'),
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  labelText: 'पासवर्ड',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
                 validator:
                     (value) => value!.isEmpty ? 'पासवर्ड आवश्यक आहे' : null,
               ),
